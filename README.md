@@ -254,12 +254,13 @@ Estos comandos generan los archivos principales del patrón MVC (Controladores) 
 
     ```
     ![StoreUR](assets/StoreUR.png)
+    ```
     
     php artisan make:request UpdateUserRequest
+    ```
     ![UpdateUR](assets/UpdateUR.png)
 
     ```
-      ![UpdateUR](assets/UpdateUR.png)
 
 ---
 
