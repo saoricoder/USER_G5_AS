@@ -251,11 +251,15 @@ Estos comandos generan los archivos principales del patrón MVC (Controladores) 
 2.  **Crear Form Requests (Adrián):**
     ```bash
     php artisan make:request StoreUserRequest
+
+    ```
     ![StoreUR](assets/StoreUR.png)
+    
     php artisan make:request UpdateUserRequest
     ![UpdateUR](assets/UpdateUR.png)
 
     ```
+      ![UpdateUR](assets/UpdateUR.png)
 
 ---
 
