@@ -1,23 +1,21 @@
 
-
+````markdown
 ![logo](assets/Logo-espe.png)
 
-### Arquitectura de software - Grupo 5  
+### Arquitectura de software - Grupo 5
 
 ## Integrantes
 
-
--  RODRIGUEZ BETTY
--  DOMINGUEZ OSCAR
--  VILLAMARIN VICTOR
--  GUAMIALAMA NICOLAS
--  POAQUIZA MARCO
--  TENEMAZA ALANIS
-
+- **RODRIGUEZ BETTY**
+- **DOMINGUEZ OSCAR**
+- **VILLAMARIN VICTOR**
+- **GUAMIALAMA NICOLAS**
+- **POAQUIZA MARCO**
+- **TENEMAZA ALANIS**
 
 # 🏥 Microservicio de Gestión de Usuarios (Citas Médicas)
 
-Este proyecto es un microservicio desarrollado en **Laravel** que implementa una **API RESTful** para gestionar usuarios (pacientes) dentro de un sistema de Citas Médicas. Utiliza el patrón **MVC** y **Laravel Sanctum** para la autenticación basada en tokens. 
+Este proyecto es un microservicio desarrollado en **Laravel** que implementa una **API RESTful** para gestionar usuarios (pacientes) dentro de un sistema de Citas Médicas. Utiliza el patrón **MVC** y **Laravel Sanctum** para la autenticación basada en tokens.
 
 ## 🗺️ Flujo de Trabajo
 
@@ -52,86 +50,100 @@ Estos comandos crean la base del proyecto Laravel y configuran el entorno de tra
 
 ---
 
-
-#### ⚙️ Configuración y Puesta en Marcha
+## ⚙️ Configuración y Puesta en Marcha
 
 Sigue estos pasos para levantar el microservicio en tu entorno local.
 
-1. Instalación de Dependencias
-
-## 1. Clona el repositorio
-git clone [URL_DE_TU_REPOSITORIO](https://github.com/saoricoder/USER_G5_AS.git)> USER_G5_AS
+### 1. Clona el repositorio
+```bash
+git clone [USER_G5_AS](https://github.com/saoricoder/USER_G5_AS.git)> USER_G5_AS
 cd USER_G5_AS
+````
 
-## 2. Instala las dependencias de PHP
-```
+### 2\. Instala las dependencias de PHP
+
+```bash
 composer install
 ```
-## 3. Copia el archivo de configuración .env
-```
+
+### 3\. Copia el archivo de configuración .env
+
+```bash
 cp .env.example .env
 ```
-## 4. Genera la clave de aplicación
+
+### 4\. Genera la clave de aplicación
+
+```bash
 php artisan key:generate
+```
 
-
+-----
 
 ## ⚙️ 2. Estructura y Dependencias (Betty)
 
 **Nota:** Betty debe editar el archivo de migración preexistente (`database/migrations/*_create_users_table.php`) para añadir los campos específicos de Citas Médicas antes de migrar.
 
 1.  **Ejecutar Migraciones:**
+
     ```bash
     php artisan migrate
     ```
 
 2.  **Instalar Laravel Sanctum:**
+
     ```bash
     composer require laravel/sanctum
     php artisan vendor:publish --provider--"Laravel\Sanctum\SanctumServiceProvider"
     ```
 
----
+-----
 
 ## 🛠️ 3. Creación de Componentes (Víctor, Valeria, Adrián)
 
 Estos comandos generan los archivos principales del patrón MVC (Controladores) y de Validación (Form Requests).
 
 1.  **Crear Controladores API (Víctor):**
+
     ```bash
     php artisan make:controller UserController --api
     php artisan make:controller AuthController
     ```
 
 2.  **Crear Form Requests (Adrián):**
+
     ```bash
     php artisan make:request StoreUserRequest
 
     ```
     ![StoreUR](assets/StoreUR.png)
     ```
-    
     php artisan make:request UpdateUserRequest
     ```
     ![UpdateUR](assets/UpdateUR.png)
-
+    ```
+    
     ```
 
----
+-----
 
 ## ✅ 4. Puesta en Marcha y Pruebas (Marco)
 
 Una vez que todos los archivos anteriores contengan el código de implementación, ejecute el servidor.
 
 1.  **Iniciar el Servidor de Desarrollo:**
+
     ```bash
     php artisan serve
     ```
 
 2.  **Endpoints Clave para Postman (Marco):**
-    * **Login (Público):** `POST http://127.0.0.1:8000/api/login` (Retorna el **Bearer Token**).
-    * **Crear Usuario (Protegido):** `POST http://127.0.0.1:8000/api/usuarios`
-    * **Listar Usuarios (Protegido):** `GET http://127.0.0.1:8000/api/usuarios`
-    * **Actualizar Usuario (Protegido):** `PUT/PATCH http://127.0.0.1:8000/api/usuarios/{id}`
 
-    **Importante:** Todas las rutas del CRUD (`/api/usuarios`) requieren el encabezado `Authorization: Bearer TOKEN para funcionar.
+      * **Login (Público):** `POST http://127.0.0.1:8000/api/login` (Retorna el **Bearer Token**).
+      * **Crear Usuario (Protegido):** `POST http://127.0.0.1:8000/api/usuarios`
+      * **Listar Usuarios (Protegido):** `GET http://127.0.0.1:8000/api/usuarios`
+      * **Actualizar Usuario (Protegido):** `PUT/PATCH http://127.0.0.1:8000/api/usuarios/{id}`
+
+    **Importante:** Todas las rutas del CRUD (`/api/usuarios`) requieren el encabezado \`Authorization: Bearer TOKEN para funcionar.
+
+<!-- end list -->
