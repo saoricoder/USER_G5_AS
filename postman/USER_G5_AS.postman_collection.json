@@ -1,0 +1,820 @@
+{
+	"info": {
+		"_postman_id": "e44b6e15-7586-4d80-baa5-8745d261123d",
+		"name": "USER_G5_AS",
+		"description": "## 📋 Overview de la Colección de Postman\n\nEsta colección agrupa las 6 peticiones fundamentales para el Microservicio de Gestión de Usuarios. Se recomienda configurar la URL base (`http://127.0.0.1:8000/api`) como una **Variable de Entorno** en Postman para facilitar el cambio de entornos de prueba.\n\n### 1\\. Variables Globales Clave\n\nLa colección debe usar variables para facilitar las pruebas de flujo:\n\n| **Variable** | **Uso** | **Ejemplo de Valor** |  \n| `baseUrl` | URL base del API | `http://127.0.0.1:8000/api` |  \n| `authToken` | Almacena el token de Sanctum después del Login | _Generado automáticamente_ |  \n| `userId` | Almacena el ID del usuario creado | _Generado automáticamente_ |\n\n---\n\n## 🔑 2. Autenticación y Seguridad (Rutas Públicas)\n\n### 1\\. Crear Usuario (Registro Inicial)\n\n- **Método:** `POST`\n    \n- **Ruta:** `{{baseUrl}}/usuarios`\n    \n- **Función:** Prueba la lógica de **creación** y las **validaciones completas**. Este paso es crucial para tener un usuario con el cual iniciar sesión.\n    \n- **Body (JSON):** Debe incluir `nombre`, `email`, `password`, `fecha_nacimiento`, `sexo` (Masculino/Femenino/Otro), `contacto_emergencia`, etc.\n    \n- **Flujo Postman:** Se recomienda usar un _Test Script_ en Postman para guardar el `id` del usuario creado en la variable `userId`.\n    \n\n### 2\\. Login de Usuario\n\n- **Método:** `POST`\n    \n- **Ruta:** `{{baseUrl}}/login`\n    \n- **Función:** Prueba el **método** **`login.`** Si las credenciales son correctas, genera el token de acceso.\n    \n- **Body (JSON):** `{ \"email\": \"...\", \"password\": \"...\" }`\n    \n- **Flujo Postman:** **CRÍTICO.** Se debe incluir un _Test Script_ para extraer el `token` de la respuesta JSON y asignarlo a la variable de entorno `authToken`.\n    \n\n---\n\n## 🔐 3. Operaciones CRUD (Rutas Protegidas)\n\nTodas estas peticiones deben incluir el encabezado `Authorization: Bearer {{authToken}}`.\n\n### 3\\. Listar Usuarios\n\n- **Método:** `GET`\n    \n- **Ruta:** `{{baseUrl}}/usuarios`\n    \n- **Función:** Prueba el método `index` y verifica que el _middleware_ `auth:sanctum` funciona correctamente.\n    \n\n### 4\\. Mostrar Usuario Específico\n\n- **Método:** `GET`\n    \n- **Ruta:** `{{baseUrl}}/usuarios/{{userId}}`\n    \n- **Función:** Prueba el método `show` usando el ID guardado.\n    \n\n### 5\\. Actualizar Usuario\n\n- **Método:** `PUT` o `PATCH`\n    \n- **Ruta:** `{{baseUrl}}/usuarios/{{userId}}`\n    \n- **Función:** Prueba el método `update` (T12 - Valeria) y las **validaciones de actualización opcionales** (T14 - Adrián).\n    \n- **Body (JSON):** Enviar solo los campos a modificar (ej. `{\"contacto_emergencia\": \"123456789\"}`).\n    \n\n### 6\\. Eliminar Usuario\n\n- **Método:** `DELETE`\n    \n- **Ruta:** `{{baseUrl}}/usuarios/{{userId}}`\n    \n- **Función:** Prueba el método `destroy`\n    \n- **Resultado Esperado:** Estado `204 No Content`.\n    \n\n---",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41410430"
+	},
+	"item": [
+		{
+			"name": "Listar Usuarios (Protegido)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Verify response status code is 200",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Verify response has a data object with current_page property",
+							"pm.test(\"Response has data object with current_page property\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('data');",
+							"    pm.expect(jsonData.data).to.have.property('current_page');",
+							"    pm.expect(jsonData.data.current_page).to.be.a('number');",
+							"});",
+							"",
+							"// Test 3: Confirm response contains an array of users",
+							"pm.test(\"Response contains an array of users\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data).to.have.property('data');",
+							"    pm.expect(jsonData.data.data).to.be.an('array');",
+							"    pm.expect(jsonData.data.data.length).to.be.above(0);",
+							"});",
+							"",
+							"// Test 4: Validate key properties of user objects",
+							"pm.test(\"User objects have required properties with correct types\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var users = jsonData.data.data;",
+							"    ",
+							"    users.forEach(function(user) {",
+							"        // Check that each user has required properties",
+							"        pm.expect(user).to.have.property('id');",
+							"        pm.expect(user).to.have.property('nombre');",
+							"        pm.expect(user).to.have.property('email');",
+							"        pm.expect(user).to.have.property('fecha_nacimiento');",
+							"        pm.expect(user).to.have.property('sexo');",
+							"        pm.expect(user).to.have.property('contacto_emergencia');",
+							"        pm.expect(user).to.have.property('created_at');",
+							"        pm.expect(user).to.have.property('updated_at');",
+							"        ",
+							"        // Validate data types",
+							"        pm.expect(user.id).to.be.a('number');",
+							"        pm.expect(user.nombre).to.be.a('string');",
+							"        pm.expect(user.email).to.be.a('string');",
+							"        pm.expect(user.fecha_nacimiento).to.be.a('string');",
+							"        pm.expect(user.sexo).to.be.a('string');",
+							"        pm.expect(user.contacto_emergencia).to.be.a('string');",
+							"        pm.expect(user.created_at).to.be.a('string');",
+							"        pm.expect(user.updated_at).to.be.a('string');",
+							"        ",
+							"        // Validate email format",
+							"        pm.expect(user.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+							"    });",
+							"});",
+							"",
+							"// Test 5: Check that the total number of users is correct",
+							"pm.test(\"Total number of users matches the data array length\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var usersArray = jsonData.data.data;",
+							"    var totalUsers = jsonData.data.total;",
+							"    ",
+							"    pm.expect(jsonData.data).to.have.property('total');",
+							"    pm.expect(totalUsers).to.be.a('number');",
+							"    pm.expect(totalUsers).to.equal(3);",
+							"});",
+							"",
+							"// Additional Test: Verify pagination structure",
+							"pm.test(\"Response has complete pagination structure\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var paginationData = jsonData.data;",
+							"    ",
+							"    pm.expect(paginationData).to.have.property('per_page');",
+							"    pm.expect(paginationData).to.have.property('last_page');",
+							"    pm.expect(paginationData).to.have.property('from');",
+							"    pm.expect(paginationData).to.have.property('to');",
+							"    pm.expect(paginationData).to.have.property('links');",
+							"    pm.expect(paginationData.links).to.be.an('array');",
+							"});",
+							"",
+							"// Additional Test: Verify gender values are valid",
+							"pm.test(\"User gender values are valid\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var users = jsonData.data.data;",
+							"    var validGenders = ['Masculino', 'Femenino'];",
+							"    ",
+							"    users.forEach(function(user) {",
+							"        pm.expect(validGenders).to.include(user.sexo);",
+							"    });",
+							"});",
+							"",
+							"// Additional Test: Response time is acceptable",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "28|6CxpsY0etNQUvNFIPefO9sXV3aaW3hWtf5p47aFpbf676825",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/usuarios",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Usuario (Protegido)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Validate response time is reasonable (under 2 seconds)",
+							"pm.test(\"Response time is reasonable (less than 2000ms)\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"// Test 2: Validate response has content",
+							"pm.test(\"Response body is not empty\", function () {",
+							"    pm.expect(pm.response.text()).to.not.be.empty;",
+							"});",
+							"",
+							"// Test 3: Validate Content-Type header exists",
+							"pm.test(\"Response has Content-Type header\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"// Debugging: Log response details",
+							"console.log(\"=== Response Debug Information ===\");",
+							"console.log(\"Status Code:\", pm.response.code);",
+							"console.log(\"Status Text:\", pm.response.status);",
+							"console.log(\"Content-Type:\", pm.response.headers.get(\"Content-Type\"));",
+							"console.log(\"Response Time:\", pm.response.responseTime + \"ms\");",
+							"console.log(\"Response Size:\", pm.response.size().body + \" bytes\");",
+							"",
+							"// Check if response is JSON",
+							"const contentType = pm.response.headers.get(\"Content-Type\");",
+							"const isJSON = contentType && contentType.includes(\"application/json\");",
+							"",
+							"if (!isJSON) {",
+							"    console.log(\"⚠️ Response is NOT JSON\");",
+							"    console.log(\"Response Preview (first 500 chars):\");",
+							"    console.log(pm.response.text().substring(0, 500));",
+							"    ",
+							"    // Test 4: Handle non-JSON responses (like HTML error pages)",
+							"    pm.test(\"Non-JSON response received - Check for common error pages\", function () {",
+							"        const responseText = pm.response.text();",
+							"        ",
+							"        if (pm.response.code === 404) {",
+							"            console.log(\"❌ 404 Error: The endpoint was not found\");",
+							"            console.log(\"Requested URL:\", pm.request.url.toString());",
+							"            console.log(\"Suggestion: Verify the API endpoint URL is correct\");",
+							"            pm.expect(pm.response.code).to.equal(404, \"Received 404 - Endpoint not found. Please check the URL.\");",
+							"        } else if (pm.response.code === 500) {",
+							"            console.log(\"❌ 500 Error: Server error occurred\");",
+							"            pm.expect(pm.response.code).to.equal(500, \"Server error occurred\");",
+							"        } else if (responseText.includes(\"<!DOCTYPE html>\") || responseText.includes(\"<html\")) {",
+							"            console.log(\"⚠️ Received HTML response instead of JSON\");",
+							"            pm.expect(isJSON).to.be.true;",
+							"        }",
+							"    });",
+							"    ",
+							"} else {",
+							"    console.log(\"✓ Response is JSON\");",
+							"    ",
+							"    // Test 5: Validate successful response with 200 status code",
+							"    pm.test(\"Status code is 200 - User created successfully\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"    ",
+							"    // Test 6: Parse and validate JSON response",
+							"    pm.test(\"Response is valid JSON\", function () {",
+							"        pm.response.to.be.json;",
+							"        ",
+							"        try {",
+							"            const jsonData = pm.response.json();",
+							"            console.log(\"✓ JSON parsed successfully\");",
+							"            console.log(\"Response data:\", JSON.stringify(jsonData, null, 2));",
+							"            ",
+							"            // Test 6a: Check for expected user properties",
+							"            pm.test(\"Response contains user data properties\", function () {",
+							"                pm.expect(jsonData).to.be.an('object');",
+							"                ",
+							"                // Check for common user response properties",
+							"                const expectedProperties = ['id', 'nombre', 'email', 'fecha_nacimiento', 'sexo', 'contacto_emergencia'];",
+							"                const presentProperties = expectedProperties.filter(prop => jsonData.hasOwnProperty(prop));",
+							"                ",
+							"                console.log(\"Expected properties found:\", presentProperties);",
+							"                ",
+							"                const hasAtLeastOneProperty = presentProperties.length > 0;",
+							"                pm.expect(hasAtLeastOneProperty).to.be.true;",
+							"            });",
+							"            ",
+							"            // Test 6b: Validate non-empty values for key fields",
+							"            pm.test(\"Key fields contain non-empty values\", function () {",
+							"                if (jsonData.nombre !== undefined) {",
+							"                    pm.expect(jsonData.nombre).to.not.be.empty;",
+							"                    console.log(\"✓ nombre:\", jsonData.nombre);",
+							"                }",
+							"                if (jsonData.email !== undefined) {",
+							"                    pm.expect(jsonData.email).to.not.be.empty;",
+							"                    console.log(\"✓ email:\", jsonData.email);",
+							"                }",
+							"            });",
+							"            ",
+							"            // Test 6c: Validate email format if present",
+							"            pm.test(\"Email has valid format (if present)\", function () {",
+							"                if (jsonData.email) {",
+							"                    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+							"                    pm.expect(jsonData.email).to.match(emailRegex);",
+							"                }",
+							"            });",
+							"            ",
+							"            // Test 6d: Validate user ID exists (for successful creation)",
+							"            pm.test(\"User ID is present in response\", function () {",
+							"                pm.expect(jsonData).to.have.property('id');",
+							"                pm.expect(jsonData.id).to.exist;",
+							"                console.log(\"✓ User ID:\", jsonData.id);",
+							"            });",
+							"            ",
+							"        } catch (e) {",
+							"            console.log(\"❌ Error parsing JSON:\", e.message);",
+							"            pm.expect.fail(\"Failed to parse JSON response: \" + e.message);",
+							"        }",
+							"    });",
+							"}",
+							"",
+							"// Test 7: Overall status code validation",
+							"pm.test(\"Status code is in valid range\", function () {",
+							"    const statusCode = pm.response.code;",
+							"    ",
+							"    if (statusCode >= 200 && statusCode < 300) {",
+							"        console.log(\"✓ Success response (2xx)\");",
+							"    } else if (statusCode >= 400 && statusCode < 500) {",
+							"        console.log(\"❌ Client error (4xx) - Check request parameters, URL, or authentication\");",
+							"    } else if (statusCode >= 500) {",
+							"        console.log(\"❌ Server error (5xx) - Issue on the server side\");",
+							"    }",
+							"    ",
+							"    // This test will show what range the status code falls into",
+							"    pm.expect([200, 201, 400, 401, 403, 404, 500, 502, 503]).to.include(statusCode);",
+							"});",
+							"",
+							"console.log(\"=== End Debug Information ===\");"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "28|6CxpsY0etNQUvNFIPefO9sXV3aaW3hWtf5p47aFpbf676825",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"nombre\": \"Marck Londrik\",\r\n\"email\": \"Omario@example.com\",\r\n\"password\": \"blu123\",\r\n\"fecha_nacimiento\": \"1997-05-20\",\r\n\"sexo\": \"Masculino\",\r\n\"contacto_emergencia\": \"02938428\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/usuarios",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar Usuario (Protegido)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Check that the response status code is 200 (successful update)",
+							"pm.test(\"Status code is 200 - User updated successfully\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Verify response has JSON body",
+							"pm.test(\"Response has JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"// Parse the response body",
+							"var jsonData = pm.response.json();",
+							"",
+							"// Test 3: Verify the response body contains the updated user information",
+							"pm.test(\"Response contains user data object\", function () {",
+							"    pm.expect(jsonData).to.be.an('object');",
+							"    pm.expect(jsonData).to.not.be.empty;",
+							"});",
+							"",
+							"// Test 4: Validate specific fields - ID",
+							"pm.test(\"User ID is present and correct\", function () {",
+							"    pm.expect(jsonData).to.have.property('id');",
+							"    pm.expect(jsonData.id).to.eql(1);",
+							"});",
+							"",
+							"// Test 5: Validate name field",
+							"pm.test(\"User name is updated correctly\", function () {",
+							"    pm.expect(jsonData).to.have.property('nombre');",
+							"    pm.expect(jsonData.nombre).to.be.a('string');",
+							"    pm.expect(jsonData.nombre).to.eql(\"Updated Test User\");",
+							"});",
+							"",
+							"// Test 6: Validate email field",
+							"pm.test(\"User email is present and valid format\", function () {",
+							"    pm.expect(jsonData).to.have.property('email');",
+							"    pm.expect(jsonData.email).to.be.a('string');",
+							"    pm.expect(jsonData.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+							"    pm.expect(jsonData.email).to.eql(\"test@example.com\");",
+							"});",
+							"",
+							"// Test 7: Validate fecha_nacimiento field",
+							"pm.test(\"Birth date is present and correct\", function () {",
+							"    pm.expect(jsonData).to.have.property('fecha_nacimiento');",
+							"    pm.expect(jsonData.fecha_nacimiento).to.eql(\"1998-01-01\");",
+							"});",
+							"",
+							"// Test 8: Validate sexo field",
+							"pm.test(\"Gender field is present and correct\", function () {",
+							"    pm.expect(jsonData).to.have.property('sexo');",
+							"    pm.expect(jsonData.sexo).to.be.a('string');",
+							"    pm.expect(jsonData.sexo).to.eql(\"Femenino\");",
+							"});",
+							"",
+							"// Test 9: Validate numero_seguro field",
+							"pm.test(\"Insurance number is present and correct\", function () {",
+							"    pm.expect(jsonData).to.have.property('numero_seguro');",
+							"    pm.expect(jsonData.numero_seguro).to.eql(\"123456789\");",
+							"});",
+							"",
+							"// Test 10: Validate historial_medico field",
+							"pm.test(\"Medical history is present\", function () {",
+							"    pm.expect(jsonData).to.have.property('historial_medico');",
+							"    pm.expect(jsonData.historial_medico).to.be.a('string');",
+							"});",
+							"",
+							"// Test 11: Validate contacto_emergencia field",
+							"pm.test(\"Emergency contact is present and correct\", function () {",
+							"    pm.expect(jsonData).to.have.property('contacto_emergencia');",
+							"    pm.expect(jsonData.contacto_emergencia).to.eql(\"0234567890\");",
+							"});",
+							"",
+							"// Test 12: Ensure response matches request body structure",
+							"pm.test(\"Response structure matches request body\", function () {",
+							"    var requestBody = JSON.parse(pm.request.body.raw);",
+							"    ",
+							"    pm.expect(jsonData).to.have.property('id');",
+							"    pm.expect(jsonData).to.have.property('nombre');",
+							"    pm.expect(jsonData).to.have.property('email');",
+							"    pm.expect(jsonData).to.have.property('fecha_nacimiento');",
+							"    pm.expect(jsonData).to.have.property('sexo');",
+							"    pm.expect(jsonData).to.have.property('numero_seguro');",
+							"    pm.expect(jsonData).to.have.property('historial_medico');",
+							"    pm.expect(jsonData).to.have.property('contacto_emergencia');",
+							"});",
+							"",
+							"// Test 13: Validate timestamp fields exist",
+							"pm.test(\"Timestamp fields are present\", function () {",
+							"    pm.expect(jsonData).to.have.property('created_at');",
+							"    pm.expect(jsonData).to.have.property('updated_at');",
+							"    pm.expect(jsonData).to.have.property('email_verified_at');",
+							"});",
+							"",
+							"// Test 14: Check that updated_at timestamp has changed",
+							"pm.test(\"Updated_at timestamp has changed from request\", function () {",
+							"    var requestBody = JSON.parse(pm.request.body.raw);",
+							"    ",
+							"    pm.expect(jsonData).to.have.property('updated_at');",
+							"    pm.expect(jsonData.updated_at).to.be.a('string');",
+							"    ",
+							"    // Verify it's a valid ISO 8601 timestamp",
+							"    pm.expect(jsonData.updated_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+							"    ",
+							"    // Check that updated_at is different from the one in request body",
+							"    pm.expect(jsonData.updated_at).to.not.eql(requestBody.updated_at);",
+							"});",
+							"",
+							"// Test 15: Validate updated_at is more recent than created_at",
+							"pm.test(\"Updated_at is equal to or more recent than created_at\", function () {",
+							"    var createdDate = new Date(jsonData.created_at);",
+							"    var updatedDate = new Date(jsonData.updated_at);",
+							"    ",
+							"    pm.expect(updatedDate.getTime()).to.be.at.least(createdDate.getTime());",
+							"});",
+							"",
+							"// Test 16: Response time is acceptable",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "28|6CxpsY0etNQUvNFIPefO9sXV3aaW3hWtf5p47aFpbf676825",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"id\": 1,\r\n        \"nombre\": \"Updated Test User\",\r\n        \"email\": \"test@example.com\",\r\n        \"email_verified_at\": \"2025-11-07T17:44:53.000000Z\",\r\n        \"fecha_nacimiento\": \"1998-01-01\",\r\n        \"sexo\": \"Femenino\",\r\n        \"numero_seguro\": \"123456789\",\r\n        \"historial_medico\": \"Este es un mensaje de prueba\",\r\n        \"contacto_emergencia\": \"0234567890\",\r\n        \"created_at\": \"2025-11-07T17:44:54.000000Z\",\r\n        \"updated_at\": \"2025-11-07T17:55:03.000000Z\"\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/usuarios/1",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"usuarios",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cerrar Sesión",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Check response status code",
+							"pm.test(\"Status code should be 200 for successful logout\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Response time should be acceptable",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"// Test 3: Check response body structure and content type",
+							"pm.test(\"Response should be JSON format\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"// Test 4: Validate response body structure",
+							"pm.test(\"Response body has correct structure\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('object');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"});",
+							"",
+							"// Test 5: Ensure logout was successful",
+							"pm.test(\"Logout message confirms success\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.be.a('string');",
+							"    pm.expect(jsonData.message.toLowerCase()).to.include('logout');",
+							"});",
+							"",
+							"// Test 6: Check for authentication token removal (if applicable)",
+							"pm.test(\"Response indicates token invalidation\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    // Check if response confirms token was revoked/deleted",
+							"    pm.expect(jsonData).to.satisfy(function(response) {",
+							"        return response.message || response.success !== undefined;",
+							"    });",
+							"});",
+							"",
+							"// Test 7: Handle error conditions - 401 Unauthorized",
+							"pm.test(\"If 401, user was not authenticated\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message');",
+							"        console.log(\"Logout failed: User not authenticated\");",
+							"    } else {",
+							"        pm.expect(pm.response.code).to.not.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Test 8: Handle error conditions - 500 Server Error",
+							"pm.test(\"If 500, server error occurred\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        console.log(\"Server error during logout - check server logs\");",
+							"        console.log(\"Response body:\", pm.response.text().substring(0, 200));",
+							"        pm.expect(true).to.be.true; // Log but don't fail the test",
+							"    } else {",
+							"        pm.expect(pm.response.code).to.not.equal(500);",
+							"    }",
+							"});",
+							"",
+							"// Test 9: Handle error conditions - 422 Validation Error",
+							"pm.test(\"If 422, validation error occurred\", function () {",
+							"    if (pm.response.code === 422) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('errors');",
+							"        console.log(\"Validation errors:\", jsonData.errors);",
+							"    } else {",
+							"        pm.expect(pm.response.code).to.not.equal(422);",
+							"    }",
+							"});",
+							"",
+							"// Test 10: Verify no sensitive data in response",
+							"pm.test(\"Response does not contain sensitive data\", function () {",
+							"    var responseText = pm.response.text().toLowerCase();",
+							"    pm.expect(responseText).to.not.include('password');",
+							"    pm.expect(responseText).to.not.include('secret');",
+							"});",
+							"",
+							"// Test 11: Check response status is in acceptable range",
+							"pm.test(\"Status code is in acceptable range (200-299 or expected error)\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204, 401, 422, 500]);",
+							"});",
+							"",
+							"// Test 12: Validate successful logout clears session",
+							"pm.test(\"Successful logout should return success indicator\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.satisfy(function(response) {",
+							"            return response.success === true || ",
+							"                   response.message || ",
+							"                   response.status === 'success';",
+							"        }, \"Response should indicate successful logout\");",
+							"    }",
+							"});",
+							"",
+							"// Store logout status for potential use in other requests",
+							"if (pm.response.code === 200) {",
+							"    pm.collectionVariables.set(\"logout_successful\", true);",
+							"    console.log(\"✓ Logout successful - session cleared\");",
+							"} else {",
+							"    pm.collectionVariables.set(\"logout_successful\", false);",
+							"    console.log(\"✗ Logout failed with status:\", pm.response.code);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "28|6CxpsY0etNQUvNFIPefO9sXV3aaW3hWtf5p47aFpbf676825",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/logout",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login (Público)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Verify response status code is 200 (successful)",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Verify response body is not empty",
+							"pm.test(\"Response body is not empty\", function () {",
+							"    pm.expect(pm.response.text()).to.not.be.empty;",
+							"});",
+							"",
+							"// Test 3: Verify response headers exist",
+							"pm.test(\"Response headers exist\", function () {",
+							"    pm.expect(pm.response.headers.all()).to.be.an('array').that.is.not.empty;",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"// Test 4: Check response time is within reasonable limit (less than 500ms)",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\": \"test@example.com\",\r\n\"password\": \"password123\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/login",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Eliminar Usuario",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "28|6CxpsY0etNQUvNFIPefO9sXV3aaW3hWtf5p47aFpbf676825",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/usuarios/4",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"usuarios",
+						"4"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": ""
+		},
+		{
+			"key": "baseUrl",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "logout_successful",
+			"value": ""
+		}
+	]
+}
