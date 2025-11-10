@@ -56,7 +56,7 @@ Sigue estos pasos para levantar el microservicio en tu entorno local.
 
 ### 1. Clona el repositorio
 ```bash
-git clone [USER_G5_AS](https://github.com/saoricoder/USER_G5_AS.git)> USER_G5_AS
+git clone [USER_G5_AS](https://github.com/saoricoder/USER_G5_AS.git)
 cd USER_G5_AS
 ````
 
