@@ -1,5 +1,5 @@
 
-````markdown
+
 ![logo](assets/Logo-espe.png)
 
 ### Arquitectura de software - Grupo 5
