@@ -143,6 +143,8 @@ Una vez que todos los archivos anteriores contengan el código de implementació
       * **Crear Usuario (Protegido):** `POST http://127.0.0.1:8000/api/usuarios`
       * **Listar Usuarios (Protegido):** `GET http://127.0.0.1:8000/api/usuarios`
       * **Actualizar Usuario (Protegido):** `PUT/PATCH http://127.0.0.1:8000/api/usuarios/{id}`
+      * **Eliminar Usuario (Protegido):** `DELETE http://127.0.0.1:8000/api/usuarios/{id}`
+      * **Cerrar Sesión (Protegido):** `POST http://127.0.0.1:8000/api/logout`
 
     **Importante:** Todas las rutas del CRUD (`/api/usuarios`) requieren el encabezado \`Authorization: Bearer TOKEN para funcionar.
 
