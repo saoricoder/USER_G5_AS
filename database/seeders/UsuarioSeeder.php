@@ -12,7 +12,7 @@ class UsuarioSeeder extends Seeder
     {
         // Paciente de prueba (ID 1)
         User::create([
-            'name' => 'Paciente Juan Pérez',
+            'nombre' => 'Paciente Juan Pérez',
             'email' => 'paciente@test.com',
             'password' => Hash::make('password'),
             'fecha_nacimiento' => '1990-05-15',
@@ -23,7 +23,7 @@ class UsuarioSeeder extends Seeder
 
         // Usuario que será Doctor (ID 2)
         User::create([
-            'name' => 'Doctora Ana García',
+            'nombre' => 'Doctora Ana García',
             'email' => 'doctora@test.com',
             'password' => Hash::make('password'),
             'fecha_nacimiento' => '1985-11-20',

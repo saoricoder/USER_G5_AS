@@ -2,24 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Database\Seeders\UsuarioSeeder;
-use Database\Seeders\DoctorSeeder; 
-use Database\Seeders\HistoriaMedicaSeeder; // Importar
-
-class DatabaseSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $this->call(UsuarioSeeder::class);
-        $this->call(DoctorSeeder::class);
-        $this->call(HistoriaMedicaSeeder::class); // Añadir la llamada
-    }
-}
-// Fin de database/seeders/DatabaseSeeder.php
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -30,11 +15,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Asegurar un usuario de prueba idempotente para desarrollo
+        User::updateOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'nombre' => 'Test User',
+                'password' => bcrypt('password123'),
+                'fecha_nacimiento' => '1999-01-01',
+                'sexo' => 'Masculino',
+                'numero_seguro' => '123456789',
+                'historial_medico' => 'Histoial medico de prueba',
+                'contacto_emergencia' => '1234567890',
+            ]
+        );
     }
 }

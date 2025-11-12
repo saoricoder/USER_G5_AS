@@ -27,7 +27,7 @@ class DoctorSeeder extends Seeder
 
         // 2. Crear un segundo Doctor (asumiendo que tienes una factoría funcional)
         $userDoctor2 = User::factory()->create([
-            'name' => 'Dr. Carlos Ruiz',
+            'nombre' => 'Dr. Carlos Ruiz',
             'email' => 'carlos.ruiz@test.com',
         ]);
 
@@ -35,10 +35,10 @@ class DoctorSeeder extends Seeder
             'user_id' => $userDoctor2->id,
             'numero_licencia' => 'LIC-789012',
             'especialidad' => 'Pediatría',
-            'dias_disponibles' => json_encode([
+            'dias_disponibles' => [
                 'Martes' => '09:00-13:00',
                 'Jueves' => '14:00-17:00'
-            ]),
+            ],
         ]);
     }
 }
