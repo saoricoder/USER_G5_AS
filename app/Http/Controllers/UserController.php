@@ -23,11 +23,11 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-            // Se utilizan los datos validados del Form Request
-        $usuario = User::create([
-            'password' => bcrypt($request->password), // Encriptación obligatoria
-            ...$request->validated(), // Incluye todos los campos de Citas Médicas
-        ]);
+        // Usar los datos validados y asegurar que la contraseña quede encriptada
+        $data = $request->validated();
+        $data['password'] = bcrypt($data['password']);
+
+        $usuario = User::create($data);
 
         return response()->json(['message' => 'Usuario creado exitosamente', 'data' => $usuario], 201);
     }
@@ -63,6 +63,6 @@ class UserController extends Controller
     public function destroy(User $usuario)
     {
         $usuario->delete();
-        return response()->json(['message' => 'Usuario eliminado exitosamente'], 204);
+        return response()->noContent();
     }
 }
